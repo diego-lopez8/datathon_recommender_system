@@ -186,3 +186,29 @@ def create_customer_features():
         customer_df.iloc[index] = row
 
     customer_df.to_csv('../data/processed/customer_features.csv', index=False)
+
+
+def get_features():
+    customer_features = pd.read_csv('../data/processed/customer_features.csv', index_col=0)
+    product_features = pd.read_csv('../data/processed/product_features.csv', index_col=0)
+    return customer_features, product_features
+
+
+def get_interactions():
+    if os.path.exists('../data/processed/interactions.csv'):
+        return pd.read_csv('../data/processed/interactions.csv', index_col=0)
+
+    files = glob.glob('../data/raw/archive/*.csv')
+    datasets = {f.split('/')[-1][:-4].replace('olist_', '').replace('_dataset', ''): pd.read_csv(f) for f in files}
+
+    customers = datasets['customers']
+    orders = datasets['orders']
+    order_items = datasets['order_items']
+    reviews = datasets['order_reviews']
+
+    customers_orders = pd.merge(customers, orders, on='customer_id', how='inner')
+    customers_orders = pd.merge(customers_orders, order_items, on='order_id', how='inner')
+    interactions = pd.merge(customers_orders, reviews, on='order_id', how='left')
+    interactions['review_score'] = interactions['review_score'].fillna(3.5) - 3
+    interactions.to_csv('../data/processed/interactions.csv', index=False)
+    return interactions 
