@@ -41,13 +41,13 @@ def create_time_features(orders):
     orders.to_csv('../data/processed/olist_orders_reduced.csv', index=False)
 
 
-def create_product_features():
+def get_product_features():
     '''
     This function creates the product features file.
     '''
 
     if os.path.exists('../data/processed/product_features.csv'):
-        return
+        return pd.read_csv('../data/processed/product_features.csv').reset_index(level=0)
 
     files = glob.glob('../data/raw/archive/*.csv')
     datasets = {f.split('/')[-1][:-4].replace('olist_', '').replace('_dataset', ''):
@@ -139,15 +139,16 @@ def create_product_features():
         product_features.loc[i, 'avg_price'] = avg_price
 
     product_features.to_csv('../data/processed/product_features.csv', index=False)
+    return product_features
 
 
-def create_customer_features():
+def get_customer_features():
     '''
     This function creates the customer features file.
     '''
 
     if os.path.exists('../data/processed/customer_features.csv'):
-        return
+        return pd.read_csv('../data/processed/customer_features.csv').reset_index(level=0)
 
     files = glob.glob('../data/raw/archive/*.csv')
     datasets = {f.split('/')[-1][:-4].replace('olist_', '').replace('_dataset', ''):
@@ -186,11 +187,12 @@ def create_customer_features():
         customer_df.iloc[index] = row
 
     customer_df.to_csv('../data/processed/customer_features.csv', index=False)
+    return customer_df
 
 
 def get_features():
-    customer_features = pd.read_csv('../data/processed/customer_features.csv', index_col=0)
-    product_features = pd.read_csv('../data/processed/product_features.csv', index_col=0)
+    customer_features = get_customer_features()
+    product_features = get_product_features()
     return customer_features, product_features
 
 
@@ -211,4 +213,4 @@ def get_interactions():
     interactions = pd.merge(customers_orders, reviews, on='order_id', how='left')
     interactions['review_score'] = interactions['review_score'].fillna(3.5) - 3
     interactions.to_csv('../data/processed/interactions.csv', index=False)
-    return interactions 
+    return interactions
