@@ -20,3 +20,10 @@ The dataset for the challenge can be found [here](https://www.kaggle.com/dataset
  
 ## Product Recommender System
 
+We implemented [this paper](https://arxiv.org/pdf/1507.08439.pdf) for our Product Recommender System.
+
+> Three factors conspire to make recommendations challenging for us. Firstly, our system contains a very large number of items. This makes our data very sparse. Secondly, we deal in fashion: often, the most relevant items are those from newly released collections, allowing us only a short window to gather data and provide effective recommendations. Finally, a large proportion of our users are firsttime visitors: we would like to present them with compelling recommendations even with little data. This combination of user and item cold-start makes both pure collaborative and content-based methods unsuitable for us.
+
+To solve this problem, We used a hybrid content-collaborative model, called LightFM which takes into account all three of the above factors. We developed an API using Flask to give recommendation based on a customer's id
+
+## Demo
